@@ -4,22 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/fondo"
     tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/texto"
-        android:text="Presione el botón para exportar las actividades a su calendario"
         android:layout_width="match_parent"
-        android:layout_marginTop="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
-        android:layout_height="wrap_content" />
+        android:layout_marginTop="50dp"
+        android:text="Presione el botón para exportar las actividades a su calendario"
+        android:textColor="@android:color/black"
+        tools:textColor="@android:color/black"
+        tools:textSize="20dp"
+        tools:textStyle="bold" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/texto"
-        android:layout_marginTop="100dp"
-        android:layout_marginLeft="120dp"
-        android:text="Exportar eventos" />
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="95dp"
+        android:text="Exportar eventos a calendario" />
 </RelativeLayout>

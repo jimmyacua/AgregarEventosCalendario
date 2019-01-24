@@ -69,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
         agregarEventosViernes("2019/10/25");
         agregarEventosViernes("2019/11/29");
         agregarEventosViernes("2019/12/27");
-        Toast.makeText(getApplication(), "Se agregaron los eventos. Puede cerrar esta aplicación", Toast.LENGTH_LONG).show();
+        this.finish();
+        Toast.makeText(getApplication(), "Se agregaron los eventos. La aplicación se cerrará.", Toast.LENGTH_LONG).show();
     }
 
     public void agregarEventosLunes(){
