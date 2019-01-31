@@ -2,22 +2,38 @@ package e.calendario.agregareventoscalendario;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
+import android.nfc.Tag;
+import android.os.Build;
+import android.os.SystemClock;
 import android.provider.CalendarContract;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.time.Period;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -27,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int SOLICITUD_PERMISO_LECTURA = 2;
     private Intent intentCalendario;
     private Calendar cal;
+    private final static String CHANNEL_ID = "Notificación";
+    private final static int NOTIFICATION_ID = 0;
+    private PendingIntent pendingIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,11 +66,24 @@ public class MainActivity extends AppCompatActivity {
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addEventToCalendar(activity);
+                //addEventToCalendar(activity);
+                setAlarm(getApplicationContext());
+                createNotificationChannel();
+                showNotification();
+                setPendingIntent();
+
             }
         });
 
 
+    }
+
+    private void setPendingIntent() {
+        Intent intent = new Intent(this, NotificationActivity.class);
+        TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
+        taskStackBuilder.addParentStack(NotificationActivity.class);
+        taskStackBuilder.addNextIntent(intent);
+        pendingIntent = taskStackBuilder.getPendingIntent(1, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private void addEventToCalendar(Activity activity) {
@@ -69,8 +102,11 @@ public class MainActivity extends AppCompatActivity {
         agregarEventosViernes("2019/10/25");
         agregarEventosViernes("2019/11/29");
         agregarEventosViernes("2019/12/27");
-        this.finish();
         Toast.makeText(getApplication(), "Se agregaron los eventos. La aplicación se cerrará.", Toast.LENGTH_LONG).show();
+        try{
+            Thread.sleep(1500);
+        }catch (Exception e){}
+        this.finish();
     }
 
     public void agregarEventosLunes(){
@@ -191,6 +227,52 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(getApplication(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void createNotificationChannel(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            CharSequence name = "Notificación";
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+    }
+
+    public void showNotification() {
+        /*NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
+        builder.setSmallIcon(R.drawable.ic_new_releases_black_24dp);
+        builder.setContentTitle("Consejo del día");
+        builder.setContentText("TEXTO");
+        builder.setColor(Color.GREEN);
+        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        builder.setLights(Notification.DEFAULT_LIGHTS, 1000, 1000);
+        builder.setVibrate(new long[]{Notification.DEFAULT_VIBRATE});
+        builder.setDefaults(Notification.DEFAULT_SOUND);
+
+        builder.setContentIntent(pendingIntent);
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
+        notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());*/
+    }
+
+    public void setAlarm(Context context){
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        boolean alarm = (PendingIntent.getBroadcast(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_NO_CREATE) != null);
+
+        if(!alarm){
+            Log.i("TAG", "crear una alarma");
+            Intent intent = new Intent(this, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+8640000, 1000, pendingIntent);
+        } else {
+            Log.i("TAG", "Alarma activa");
+        }
+        MyReceiver myReceiver = new MyReceiver();
+        Calendar cNot = Calendar.getInstance();
+        cNot.set(Calendar.HOUR_OF_DAY, 14);
+        cNot.set(Calendar.MINUTE, 25);
+        myReceiver.creaNotificacion(cNot.getTimeInMillis(), getApplicationContext());
     }
 
 }
