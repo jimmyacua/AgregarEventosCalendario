@@ -3,38 +3,28 @@ package e.calendario.agregareventoscalendario;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
-import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.os.Build;
-import android.os.SystemClock;
 import android.provider.CalendarContract;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import java.text.SimpleDateFormat;
-import java.time.Period;
 import java.util.Calendar;
+import java.util.Stack;
 import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,17 +37,19 @@ public class MainActivity extends AppCompatActivity {
     private final static int NOTIFICATION_ID = 0;
     private PendingIntent pendingIntent;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button boton = (Button) findViewById(R.id.button);
-        final Activity activity = (Activity) this;
+        final Activity activity = this;
+        final Button boton = (Button) findViewById(R.id.button);
         cal = Calendar.getInstance();
 
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED){
+        final TextView texto = (TextView) findViewById(R.id.texto);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_CALENDAR}, SOLICITUD_PERMISO_ESCRITURA);
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, SOLICITUD_PERMISO_LECTURA);
         }
@@ -66,33 +58,23 @@ public class MainActivity extends AppCompatActivity {
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //addEventToCalendar(activity);
-                //showTipActivity();
+                addEventToCalendar(activity);
+                boton.setEnabled(false);
+                texto.setText("Los eventos ya han sido agregados a su calendario.");
             }
         });
 
 
         createNotificationChannel();
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 18);
-        calendar.set(Calendar.MINUTE, 45);
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
 
         Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(MainActivity.this.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-
-
-
-    }
-
-    private void setPendingIntent() {
-        Intent intent = new Intent(this, NotificationActivity.class);
-        TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
-        taskStackBuilder.addParentStack(NotificationActivity.class);
-        taskStackBuilder.addNextIntent(intent);
-        pendingIntent = taskStackBuilder.getPendingIntent(1, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private void addEventToCalendar(Activity activity) {
@@ -111,14 +93,10 @@ public class MainActivity extends AppCompatActivity {
         agregarEventosViernes("2019/10/25");
         agregarEventosViernes("2019/11/29");
         agregarEventosViernes("2019/12/27");
-        Toast.makeText(getApplication(), "Se agregaron los eventos. La aplicación se cerrará.", Toast.LENGTH_LONG).show();
-        try{
-            Thread.sleep(1500);
-        }catch (Exception e){}
-        this.finish();
+        Toast.makeText(getApplication(), "Se agregaron los eventos. Puede revisarlos en su calendario.", Toast.LENGTH_LONG).show();
     }
 
-    public void agregarEventosLunes(){
+    public void agregarEventosLunes() {
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
             cal.setTime(formatter.parse("2019/01/14 06:00"));
@@ -148,7 +126,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplication(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-    public void agregarEventosMartes(){
+
+    public void agregarEventosMartes() {
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
             cal.setTime(formatter.parse("2019/01/15 06:00"));
@@ -178,7 +157,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplication(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-    public void agregarEventosMiercoles(){
+
+    public void agregarEventosMiercoles() {
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
             cal.setTime(formatter.parse("2019/01/16 06:00"));
@@ -208,10 +188,11 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplication(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-    public void agregarEventosViernes(String fecha){
+
+    public void agregarEventosViernes(String fecha) {
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-            cal.setTime(formatter.parse(fecha + " 05:00"));
+            cal.setTime(formatter.parse(fecha + " 06:00"));
             String eventdate = cal.get(Calendar.YEAR) + "/" + cal.get(Calendar.MONTH) + "/" + cal.get(Calendar.DAY_OF_MONTH) + " " + cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE);
             Log.e("event date", eventdate);
             Cursor cur = this.getContentResolver().query(CalendarContract.Calendars.CONTENT_URI, null, null, null, null);
@@ -238,28 +219,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void createNotificationChannel(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+    public void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Notificación";
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(notificationChannel);
         }
     }
-
-    public void setAlarm(Context context){
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        boolean alarm = (PendingIntent.getBroadcast(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_NO_CREATE) != null);
-
-        if(!alarm){
-            Log.i("TAG", "crear una alarma");
-            Intent intent = new Intent(this, MainActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+8640000, 1000, pendingIntent);
-        } else {
-            Log.i("TAG", "Alarma activa");
-        }
-    }
-
 }

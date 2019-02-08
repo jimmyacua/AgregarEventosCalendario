@@ -1,32 +1,21 @@
 package e.calendario.agregareventoscalendario;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
-import java.util.Calendar;
+import android.widget.TextView;
 
 public class NotificationActivity extends AppCompatActivity {
-
+    private TextView textConsejo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
-        //showTipActivity();
-    }
-
-    public void showTipActivity() {
-        Intent intent = new Intent(getBaseContext(), AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 19);
-        calendar.set(Calendar.MINUTE, 49);
-        calendar.set(Calendar.SECOND, 0);
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        textConsejo = (TextView) findViewById(R.id.consejo_textView);
+        String c = " ";
+        try {
+            Bundle b = getIntent().getBundleExtra("bundles");
+            c = AlarmReceiver.getConsejo();
+        } catch (Exception e){}
+        textConsejo.setText(c);
     }
 }
