@@ -15,8 +15,9 @@
         android:layout_marginTop="50dp"
         android:text="Presione el botón para exportar las actividades a su calendario"
         android:textColor="@android:color/black"
+        android:textStyle="bold"
         tools:textColor="@android:color/black"
-        tools:textSize="20dp"
+        tools:textSize="24sp"
         tools:textStyle="bold" />
 
     <Button

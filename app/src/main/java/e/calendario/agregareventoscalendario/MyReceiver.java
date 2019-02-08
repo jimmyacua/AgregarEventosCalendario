@@ -16,7 +16,11 @@ import java.util.Calendar;
 public class MyReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        creaNotificacion(System.currentTimeMillis(), context);
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 20);
+        cal.set(Calendar.MINUTE, 06);
+        cal.set(Calendar.SECOND, 0);
+        creaNotificacion(cal.getTimeInMillis(), context);
     }
 
     public void creaNotificacion(long currentTimeMillis, Context context) {
@@ -37,6 +41,7 @@ public class MyReceiver extends BroadcastReceiver {
             builder.setVibrate(new long[]{Notification.DEFAULT_VIBRATE});
             builder.setDefaults(Notification.DEFAULT_SOUND);
             builder.setContentIntent(pendingIntent);
+            builder.setAutoCancel(true);
 
             notificationManager.notify((int) currentTimeMillis, builder.build());
         }catch (Exception e){}

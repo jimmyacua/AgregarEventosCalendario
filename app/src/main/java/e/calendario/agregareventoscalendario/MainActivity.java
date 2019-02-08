@@ -67,13 +67,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //addEventToCalendar(activity);
-                setAlarm(getApplicationContext());
-                createNotificationChannel();
-                showNotification();
-                setPendingIntent();
-
+                //showTipActivity();
             }
         });
+
+
+        createNotificationChannel();
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 18);
+        calendar.set(Calendar.MINUTE, 45);
+        calendar.set(Calendar.SECOND, 0);
+
+        Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(MainActivity.this.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+
 
 
     }
@@ -238,23 +247,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void showNotification() {
-        /*NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
-        builder.setSmallIcon(R.drawable.ic_new_releases_black_24dp);
-        builder.setContentTitle("Consejo del día");
-        builder.setContentText("TEXTO");
-        builder.setColor(Color.GREEN);
-        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        builder.setLights(Notification.DEFAULT_LIGHTS, 1000, 1000);
-        builder.setVibrate(new long[]{Notification.DEFAULT_VIBRATE});
-        builder.setDefaults(Notification.DEFAULT_SOUND);
-
-        builder.setContentIntent(pendingIntent);
-
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
-        notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());*/
-    }
-
     public void setAlarm(Context context){
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         boolean alarm = (PendingIntent.getBroadcast(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_NO_CREATE) != null);
@@ -268,11 +260,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.i("TAG", "Alarma activa");
         }
-        MyReceiver myReceiver = new MyReceiver();
-        Calendar cNot = Calendar.getInstance();
-        cNot.set(Calendar.HOUR_OF_DAY, 14);
-        cNot.set(Calendar.MINUTE, 25);
-        myReceiver.creaNotificacion(cNot.getTimeInMillis(), getApplicationContext());
     }
 
 }
