@@ -11,7 +11,7 @@ public class NotificationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
         textConsejo = (TextView) findViewById(R.id.consejo_textView);
-        String c = " ";
+        String c = "";
         try {
             Bundle b = getIntent().getBundleExtra("bundles");
             c = AlarmReceiver.getConsejo();

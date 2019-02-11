@@ -21,11 +21,12 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     public AlarmReceiver(){
         pilaConsejos = new Stack<>();
-        llenarPilaConsejos();
+        //llenarPilaConsejos();
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        llenarPilaConsejos();
         long when = System.currentTimeMillis();
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -133,7 +134,9 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     public String sacarConsejo() {
-        String consejo = pilaConsejos.pop();
+        //String consejo = pilaConsejos.pop();
+        int random = (int) (Math.random()*66);
+        consejo = pilaConsejos.get(random);
         if(pilaConsejos.empty()){
             llenarPilaConsejos();
         }
