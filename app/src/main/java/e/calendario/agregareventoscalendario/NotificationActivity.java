@@ -18,4 +18,8 @@ public class NotificationActivity extends AppCompatActivity {
         } catch (Exception e){}
         textConsejo.setText(c);
     }
+
+    public void setTextConsejo(String cons){
+        textConsejo.setText(cons);
+    }
 }

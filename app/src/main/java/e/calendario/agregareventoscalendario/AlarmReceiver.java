@@ -18,6 +18,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     private int MID = 0;
     private Stack<String> pilaConsejos;
     private static String consejo;
+    NotificationActivity notificationActivity;
 
     public AlarmReceiver(){
         pilaConsejos = new Stack<>();
@@ -134,12 +135,15 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     public String sacarConsejo() {
-        //String consejo = pilaConsejos.pop();
         int random = (int) (Math.random()*66);
         consejo = pilaConsejos.get(random);
         if(pilaConsejos.empty()){
             llenarPilaConsejos();
         }
+        try {
+            notificationActivity.setTextConsejo(consejo);
+        } catch (Exception e){}
+        //notificationActivity.setTextConsejo(consejo);
         return consejo;
     }
 

@@ -6,6 +6,7 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.RemoteAction;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -75,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(MainActivity.this.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+
+
     }
 
     private void addEventToCalendar(Activity activity) {
@@ -117,7 +120,15 @@ public class MainActivity extends AppCompatActivity {
                 eventValues.put(CalendarContract.Events.DTEND, cal.getTimeInMillis() + 360 * 60 * 1000);
                 eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().toString());
                 Uri eventUri = this.getContentResolver().insert(CalendarContract.Events.CONTENT_URI, eventValues);
-                Long eventID = ContentUris.parseId(eventUri);
+
+                int eventID = (int) ContentUris.parseId(eventUri);
+
+                ContentValues remainders = new ContentValues();
+                remainders.put(CalendarContract.Reminders.EVENT_ID, eventID);
+                remainders.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
+                remainders.put(CalendarContract.Reminders.MINUTES, 10);
+
+                Uri uri2 = this.getContentResolver().insert(CalendarContract.Reminders.CONTENT_URI, remainders);
             }
             if (cur != null) {
                 cur.close();
