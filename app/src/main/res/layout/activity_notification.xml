@@ -11,14 +11,15 @@
         android:id="@+id/texto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="50dp"
-        android:text="Consejo del día:"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
+        android:text="Consejos:"
         android:textColor="@android:color/black"
         android:textStyle="bold"
         tools:textColor="@android:color/black"
         tools:textSize="40sp"
-        tools:textStyle="bold" />
+        tools:textStyle="bold"
+        android:textSize="20dp"/>
 
     <TextView
         android:id="@+id/consejo_textView"
@@ -27,11 +28,18 @@
         android:layout_marginLeft="10dp"
         android:layout_marginTop="150dp"
         android:layout_marginRight="20dp"
-        android:text="CONSEJO"
+        android:text=""
         android:textColor="@android:color/background_dark"
         android:textStyle="bold"
         tools:textColor="@android:color/black"
         tools:textSize="30sp"
-        tools:textStyle="bold" />
+        tools:textStyle="bold"
+        />
+
+    <ListView
+        android:id="@+id/lista"
+        android:layout_below="@+id/texto"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"></ListView>
 
 </RelativeLayout>

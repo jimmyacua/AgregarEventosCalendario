@@ -28,4 +28,14 @@
         android:layout_marginLeft="60dp"
         android:layout_marginTop="95dp"
         android:text="Exportar eventos a calendario" />
+
+    <Button
+        android:id="@+id/button_consejos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button"
+        android:layout_alignRight="@+id/button"
+        android:layout_marginTop="100dp"
+        android:gravity="center|fill"
+        android:text="Ver consejos" />
 </RelativeLayout>

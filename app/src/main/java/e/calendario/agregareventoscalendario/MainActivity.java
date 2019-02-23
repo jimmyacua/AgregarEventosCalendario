@@ -6,7 +6,6 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.RemoteAction;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -25,7 +24,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Stack;
 import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         final Activity activity = this;
         final Button boton = (Button) findViewById(R.id.button);
         cal = Calendar.getInstance();
+        final Button botonConsejos = (Button) findViewById(R.id.button_consejos);
 
         final TextView texto = (TextView) findViewById(R.id.texto);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
@@ -62,6 +61,14 @@ public class MainActivity extends AppCompatActivity {
                 addEventToCalendar(activity);
                 boton.setEnabled(false);
                 texto.setText("Los eventos ya han sido agregados a su calendario.");
+            }
+        });
+
+        botonConsejos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -160,6 +167,13 @@ public class MainActivity extends AppCompatActivity {
                 eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().toString());
                 Uri eventUri = this.getContentResolver().insert(CalendarContract.Events.CONTENT_URI, eventValues);
                 Long eventID = ContentUris.parseId(eventUri);
+
+                ContentValues remainders = new ContentValues();
+                remainders.put(CalendarContract.Reminders.EVENT_ID, eventID);
+                remainders.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
+                remainders.put(CalendarContract.Reminders.MINUTES, 10);
+
+                Uri uri2 = this.getContentResolver().insert(CalendarContract.Reminders.CONTENT_URI, remainders);
             }
             if (cur != null) {
                 cur.close();
@@ -191,6 +205,13 @@ public class MainActivity extends AppCompatActivity {
                 eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().toString());
                 Uri eventUri = this.getContentResolver().insert(CalendarContract.Events.CONTENT_URI, eventValues);
                 Long eventID = ContentUris.parseId(eventUri);
+
+                ContentValues remainders = new ContentValues();
+                remainders.put(CalendarContract.Reminders.EVENT_ID, eventID);
+                remainders.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
+                remainders.put(CalendarContract.Reminders.MINUTES, 10);
+
+                Uri uri2 = this.getContentResolver().insert(CalendarContract.Reminders.CONTENT_URI, remainders);
             }
             if (cur != null) {
                 cur.close();
@@ -221,6 +242,13 @@ public class MainActivity extends AppCompatActivity {
                 eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().toString());
                 Uri eventUri = this.getContentResolver().insert(CalendarContract.Events.CONTENT_URI, eventValues);
                 Long eventID = ContentUris.parseId(eventUri);
+
+                ContentValues remainders = new ContentValues();
+                remainders.put(CalendarContract.Reminders.EVENT_ID, eventID);
+                remainders.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
+                remainders.put(CalendarContract.Reminders.MINUTES, 10);
+
+                Uri uri2 = this.getContentResolver().insert(CalendarContract.Reminders.CONTENT_URI, remainders);
             }
             if (cur != null) {
                 cur.close();

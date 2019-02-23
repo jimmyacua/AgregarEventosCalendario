@@ -18,11 +18,12 @@ public class AlarmReceiver extends BroadcastReceiver {
     private int MID = 0;
     private Stack<String> pilaConsejos;
     private static String consejo;
+    private String[] arrayConsejos;
     NotificationActivity notificationActivity;
 
     public AlarmReceiver(){
         pilaConsejos = new Stack<>();
-        //llenarPilaConsejos();
+        llenarPilaConsejos();
     }
 
     @Override
@@ -44,6 +45,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         builder.setContentTitle("Consejo del día");
         builder.setContentText(consejo);
         notificationIntent.putExtra("nConsejo", consejo);
+        //notificationIntent.putExtra("textConsejo", consejo);
         builder.setColor(Color.GREEN);
         builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         builder.setLights(Notification.DEFAULT_LIGHTS, 1000, 1000);
@@ -124,7 +126,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 "Guarda los alimentos en la clásica fiambrera o tarros de cristal en lugar de envolverlos o taparlos con película de plástico o aluminio.\n" +
                 "Si te ha caducado algún medicamento, no lo tires a la basura, llévalo a una farmacia.\n" +
                 "No agobies a los niños con juguetes complejos que requieren baterías.\n";
-        String [] arrayConsejos = consejos.split("\n");
+        arrayConsejos = consejos.split("\n");
         for(int i=0; i<67; i++) {
             pilaConsejos.add(arrayConsejos[i]);
         }
@@ -134,6 +136,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         return consejo;
     }
 
+    public String[] getArrayConsejos(){
+        return arrayConsejos;
+    }
+
     public String sacarConsejo() {
         int random = (int) (Math.random()*66);
         consejo = pilaConsejos.get(random);
@@ -141,9 +147,8 @@ public class AlarmReceiver extends BroadcastReceiver {
             llenarPilaConsejos();
         }
         try {
-            notificationActivity.setTextConsejo(consejo);
+            //notificationActivity.setTextConsejo(consejo);
         } catch (Exception e){}
-        //notificationActivity.setTextConsejo(consejo);
         return consejo;
     }
 
