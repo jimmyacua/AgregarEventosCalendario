@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="e.calendario.agregareventoscalendario">
 
-    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
-    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR"></uses-permission>
+    <uses-permission android:name="android.permission.READ_CALENDAR"></uses-permission>
 
     <application
         android:allowBackup="true"
