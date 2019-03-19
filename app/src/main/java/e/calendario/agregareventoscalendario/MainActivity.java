@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         final Button botonConsejos = (Button) findViewById(R.id.button_consejos);
 
         final TextView texto = (TextView) findViewById(R.id.texto);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_CALENDAR}, SOLICITUD_PERMISO_ESCRITURA);
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         intentCalendario = new Intent(Intent.CATEGORY_APP_CALENDAR);
+
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
         createNotificationChannel();
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.HOUR_OF_DAY, 9);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
 
@@ -269,10 +271,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Notificación";
+            CharSequence name = CHANNEL_ID;
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(notificationChannel);
         }
+    }
+
+    public String getChannelId(){
+        return CHANNEL_ID;
     }
 }

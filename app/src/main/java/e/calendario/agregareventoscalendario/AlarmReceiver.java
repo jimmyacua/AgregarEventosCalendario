@@ -19,7 +19,6 @@ public class AlarmReceiver extends BroadcastReceiver {
     private Stack<String> pilaConsejos;
     private static String consejo;
     private String[] arrayConsejos;
-    NotificationActivity notificationActivity;
 
     public AlarmReceiver(){
         pilaConsejos = new Stack<>();
@@ -45,7 +44,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         builder.setContentTitle("Consejo del día");
         builder.setContentText(consejo);
         notificationIntent.putExtra("nConsejo", consejo);
-        //notificationIntent.putExtra("textConsejo", consejo);
+        builder.setChannelId("Notificación");
         builder.setColor(Color.GREEN);
         builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         builder.setLights(Notification.DEFAULT_LIGHTS, 1000, 1000);
