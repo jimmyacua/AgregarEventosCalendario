@@ -131,10 +131,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
     }
 
-    public static String getConsejo() {
-        return consejo;
-    }
-
     public String[] getArrayConsejos(){
         return arrayConsejos;
     }
@@ -146,7 +142,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             llenarPilaConsejos();
         }
         try {
-            //notificationActivity.setTextConsejo(consejo);
+
         } catch (Exception e){}
         return consejo;
     }

@@ -34,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private Intent intentCalendario;
     private Calendar cal;
     private final static String CHANNEL_ID = "Notificación";
-    private final static int NOTIFICATION_ID = 0;
-    private PendingIntent pendingIntent;
 
 
     @Override
@@ -61,14 +59,6 @@ public class MainActivity extends AppCompatActivity {
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-		/*if (ActivityCompat.checkSelfPermission(getApplication(), Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getApplication(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-		    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_CALENDAR}, SOLICITUD_PERMISO_ESCRITURA);
-		    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_CALENDAR}, SOLICITUD_PERMISO_LECTURA);
-            Toast.makeText(getApplicationContext(), "ENTRA A IF SIN PERMISOS", Toast.LENGTH_LONG);
-		}*/
                 int permisoEscritura = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_CALENDAR);
                 if(permisoEscritura == -1){
                     ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_CALENDAR}, SOLICITUD_PERMISO_ESCRITURA);
