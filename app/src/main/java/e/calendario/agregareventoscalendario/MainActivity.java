@@ -61,14 +61,25 @@ public class MainActivity extends AppCompatActivity {
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-		if (ActivityCompat.checkSelfPermission(getApplication(), Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
+		/*if (ActivityCompat.checkSelfPermission(getApplication(), Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getApplication(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
 		    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_CALENDAR}, SOLICITUD_PERMISO_ESCRITURA);
 		    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_CALENDAR}, SOLICITUD_PERMISO_LECTURA);
             Toast.makeText(getApplicationContext(), "ENTRA A IF SIN PERMISOS", Toast.LENGTH_LONG);
-		}
+		}*/
+                int permisoEscritura = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_CALENDAR);
+                if(permisoEscritura == -1){
+                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_CALENDAR}, SOLICITUD_PERMISO_ESCRITURA);
+                }
+
+                int permisoLectura = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_CALENDAR);
+                if(permisoLectura == -1){
+                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_CALENDAR}, SOLICITUD_PERMISO_LECTURA);
+                }
+
+
                 addEventToCalendar(activity);
                 boton.setEnabled(false);
                 texto.setText("Los eventos ya han sido agregados a su calendario.");
@@ -127,7 +138,11 @@ public class MainActivity extends AppCompatActivity {
             if (cur.moveToFirst()) {
                 long calendarID = cur.getLong(cur.getColumnIndex(CalendarContract.Calendars._ID));
                 ContentValues eventValues = new ContentValues();
-                eventValues.put(CalendarContract.Events.CALENDAR_ID, calendarID);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    eventValues.put(CalendarContract.Events.CALENDAR_ID, 3);
+                } else{
+                    eventValues.put(CalendarContract.Events.CALENDAR_ID, calendarID);
+                }
                 eventValues.put(CalendarContract.Events.TITLE, "Residuos Orgánicos");
                 eventValues.put(CalendarContract.Events.DESCRIPTION, "Cáscaras, residuos de jardín, residuos de frutas y vegetales.");
                 eventValues.put(CalendarContract.Events.ALL_DAY, false);
@@ -166,7 +181,11 @@ public class MainActivity extends AppCompatActivity {
             if (cur.moveToFirst()) {
                 long calendarID = cur.getLong(cur.getColumnIndex(CalendarContract.Calendars._ID));
                 ContentValues eventValues = new ContentValues();
-                eventValues.put(CalendarContract.Events.CALENDAR_ID, calendarID);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    eventValues.put(CalendarContract.Events.CALENDAR_ID, 3);
+                } else{
+                    eventValues.put(CalendarContract.Events.CALENDAR_ID, calendarID);
+                }
                 eventValues.put(CalendarContract.Events.TITLE, "Residuos Ordinarios");
                 eventValues.put(CalendarContract.Events.DESCRIPTION, "Restos de carne, comidas, pañales, toallas sanitarias, papel higíenico, envolturas de embutidos, papel sucio o con grasa, ropa, zapatos, estereofón");
                 eventValues.put(CalendarContract.Events.ALL_DAY, false);
@@ -204,7 +223,11 @@ public class MainActivity extends AppCompatActivity {
             if (cur.moveToFirst()) {
                 long calendarID = cur.getLong(cur.getColumnIndex(CalendarContract.Calendars._ID));
                 ContentValues eventValues = new ContentValues();
-                eventValues.put(CalendarContract.Events.CALENDAR_ID, calendarID);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    eventValues.put(CalendarContract.Events.CALENDAR_ID, 3);
+                } else{
+                    eventValues.put(CalendarContract.Events.CALENDAR_ID, calendarID);
+                }
                 eventValues.put(CalendarContract.Events.TITLE, "Residuos Reciclables");
                 eventValues.put(CalendarContract.Events.DESCRIPTION, "Bolsas, galones, pichingas, cajas de plástico, vidrio(no depositar vidrio de ventanas o bombillos), papel, cartón, tetrabrik, tetrapack* y latas* (lavados y secos*)");
                 eventValues.put(CalendarContract.Events.ALL_DAY, false);
@@ -242,7 +265,11 @@ public class MainActivity extends AppCompatActivity {
             if (cur.moveToFirst()) {
                 long calendarID = cur.getLong(cur.getColumnIndex(CalendarContract.Calendars._ID));
                 ContentValues eventValues = new ContentValues();
-                eventValues.put(CalendarContract.Events.CALENDAR_ID, calendarID);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    eventValues.put(CalendarContract.Events.CALENDAR_ID, 3);
+                } else{
+                    eventValues.put(CalendarContract.Events.CALENDAR_ID, calendarID);
+                }
                 eventValues.put(CalendarContract.Events.TITLE, "Residuos No Tradicionales");
                 eventValues.put(CalendarContract.Events.DESCRIPTION, "chatarra, electrodomésticos, madera, hierro, aceite quemado, escombros en sacos y madera");
                 eventValues.put(CalendarContract.Events.ALL_DAY, false);
@@ -278,7 +305,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public String getChannelId(){
-        return CHANNEL_ID;
-    }
 }
