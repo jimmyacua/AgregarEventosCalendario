@@ -6,7 +6,6 @@ import android.content.ContextWrapper;
 import android.os.Build;
 
 public class NotificationUtils extends ContextWrapper {
-    private NotificationManager manager;
     public static final String ANDROID_CHANNEL_ID = "com.pacayasID.ANDROID";
     public static final String ANDROID_CHANNEL_NAME = "com.pacayasName.ANDROID";
 

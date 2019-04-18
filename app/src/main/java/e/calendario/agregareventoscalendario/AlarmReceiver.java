@@ -46,6 +46,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         notificationIntent.putExtra("nConsejo", consejo);
         builder.setChannelId("Notificación");
         builder.setColor(Color.GREEN);
+        builder.setStyle(new NotificationCompat.BigTextStyle().bigText(consejo));
         builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         builder.setLights(Notification.DEFAULT_LIGHTS, 1000, 1000);
         builder.setVibrate(new long[]{Notification.DEFAULT_VIBRATE});
@@ -115,7 +116,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 "Reutiliza las bolsas de plástico, y utiliza mejor las que sean biodegradables. Guárdalas cuando vayáis a hacer la compra, o usa bolsas de tela.\n" +
                 "No abuses de la luz eléctrica, aprovecha la luz natural. Es más saludable ajustar nuestro horario para aprovechar al máximo las horas de luz solar.\n" +
                 "Usa cajar, telas, bricks...para hacer manualidades de decoraciones o juguetes. Cualquier objeto se puede reciclar y convertir en algo increíble, ¡usa tu imaginación!\n" +
-                "Usa bombillas LED que duran mucho más que las bombillas tradicionales y que inclusiva las fluorescentes.\n" +
+                "Usa bombillas LED que duran mucho más que las bombillas tradicionales y que inclusive las fluorescentes.\n" +
                 "Evita los aerosoles que contienen CFCs y que son causantes de la destrucción de la capa de ozono, u otros gases que también contribuyen al efecto invernadero.\n" +
                 "La gran mayoría de los productos de limpieza que se anuncian no sólo son innecesarios sino también muy nocivos para el medio ambiente.\n" +
                 "Los ambientadores no eliminan los malos olores sino que desprenden otros más fuertes que nos impiden detectar los primeros.\n" +

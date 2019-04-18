@@ -6,8 +6,10 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -25,7 +27,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
+
+import me.everything.providers.android.calendar.CalendarProvider;
+import me.everything.providers.android.calendar.Event;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,6 +62,53 @@ public class MainActivity extends AppCompatActivity {
 
         intentCalendario = new Intent(Intent.CATEGORY_APP_CALENDAR);
 
+        createNotificationChannel();
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 9);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
+        Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(MainActivity.this.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+
+        CalendarProvider calendarProvider = new CalendarProvider(getApplicationContext());
+        //List<me.everything.providers.android.calendar.Calendar> calendars = calendarProvider.getCalendars().getList();
+        long calendarID = 0;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            calendarID = 3;
+        } else{
+            Cursor cur = this.getContentResolver().query(CalendarContract.Calendars.CONTENT_URI, null, null, null, null);
+            if (cur.moveToFirst()) {
+                calendarID = cur.getLong(cur.getColumnIndex(CalendarContract.Calendars._ID));
+            }
+            if (cur != null) {
+                cur.close();
+            }
+        }
+        final List<Event> calendars = calendarProvider.getEvents(calendarID).getList();
+
+        boolean residuosOrd = false, residuosRec = false, residuosNT = false, residuosOrg = false;
+
+
+        for(int i = 0; i< calendars.size(); i++){
+            if (calendars.get(i).title.equals("Residuos Ordinarios")){
+                residuosOrd = true;
+            } else if(calendars.get(i).title.equals("Residuos Reciclables")){
+                residuosRec = true;
+            } else if(calendars.get(i).title.equals("Residuos No Tradicionales")){
+                residuosNT = true;
+            } else if(calendars.get(i).title.equals("Residuos Orgánicos")){
+                residuosOrg = true;
+            }
+
+        }
+        if(residuosOrd && residuosRec && residuosNT && residuosOrg){
+            boton.setEnabled(false);
+            texto.setText("Los eventos ya han sido agregados a su calendario.");
+        }
+
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,11 +121,11 @@ public class MainActivity extends AppCompatActivity {
                 if(permisoLectura == -1){
                     ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_CALENDAR}, SOLICITUD_PERMISO_LECTURA);
                 }
-
-
                 addEventToCalendar(activity);
                 boton.setEnabled(false);
                 texto.setText("Los eventos ya han sido agregados a su calendario.");
+
+
             }
         });
 
@@ -83,18 +136,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
-        createNotificationChannel();
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 9);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-
-        Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(MainActivity.this.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
 
 
     }
