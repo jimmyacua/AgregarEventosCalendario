@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "e.calendario.agregareventoscalendario"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 28
 
         versionCode 1

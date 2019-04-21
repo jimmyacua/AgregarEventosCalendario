@@ -6,12 +6,17 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 
 import java.util.Stack;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class AlarmReceiver extends BroadcastReceiver {
@@ -19,10 +24,12 @@ public class AlarmReceiver extends BroadcastReceiver {
     private Stack<String> pilaConsejos;
     private static String consejo;
     private String[] arrayConsejos;
+    private int numConsejo;
 
     public AlarmReceiver(){
         pilaConsejos = new Stack<>();
         llenarPilaConsejos();
+        //numConsejo = 1;
     }
 
     @Override
@@ -56,6 +63,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         notificationManager.notify(MID, builder.build());
         MID++;
 
+        SharedPreferences.Editor editor = context.getSharedPreferences("numero", MODE_PRIVATE).edit();
+        editor.putInt("numConsejo",numConsejo);
+        editor.apply();
+        numConsejo = 0;
     }
 
     public void llenarPilaConsejos(){
@@ -137,15 +148,11 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     public String sacarConsejo() {
-        int random = (int) (Math.random()*66);
-        consejo = pilaConsejos.get(random);
+        numConsejo = (int) (Math.random()*66);
+        consejo = pilaConsejos.get(numConsejo);
         if(pilaConsejos.empty()){
             llenarPilaConsejos();
         }
-        try {
-
-        } catch (Exception e){}
         return consejo;
     }
-
 }

@@ -50,9 +50,10 @@ public class MainActivity extends AppCompatActivity {
         final Activity activity = this;
         final Button boton = (Button) findViewById(R.id.button);
         cal = Calendar.getInstance();
-        final Button botonConsejos = (Button) findViewById(R.id.button_consejos);
 
         final TextView texto = (TextView) findViewById(R.id.texto);
+
+        final TextView consejos = (TextView) findViewById(R.id.consejo_textView);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
@@ -129,15 +130,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        botonConsejos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
-                startActivity(intent);
-            }
-        });
+    }
 
-
+    public void onClick(View v){
+        Intent intentCons = new Intent(MainActivity.this, NotificationActivity.class);
+        startActivity(intentCons);
+        //Toast.makeText(getApplication(), "CLICK EN TEXTVIEW.", Toast.LENGTH_LONG).show();
     }
 
     private void addEventToCalendar(Activity activity) {
