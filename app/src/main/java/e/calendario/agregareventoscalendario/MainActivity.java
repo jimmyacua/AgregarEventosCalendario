@@ -6,10 +6,8 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -41,11 +39,11 @@ public class MainActivity extends AppCompatActivity {
     private Calendar cal;
     private final static String CHANNEL_ID = "Notificación";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         final Activity activity = this;
         final Button boton = (Button) findViewById(R.id.button);
@@ -64,15 +62,16 @@ public class MainActivity extends AppCompatActivity {
         intentCalendario = new Intent(Intent.CATEGORY_APP_CALENDAR);
 
         createNotificationChannel();
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 9);
+        crearNotificacion();
+        //Calendar calendar = Calendar.getInstance();
+        /*calendar.set(Calendar.HOUR_OF_DAY, 9);
         calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.SECOND, 0);*/
 
-        Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
+        /*Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(MainActivity.this.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);*/
 
         CalendarProvider calendarProvider = new CalendarProvider(getApplicationContext());
         //List<me.everything.providers.android.calendar.Calendar> calendars = calendarProvider.getCalendars().getList();
@@ -135,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View v){
         Intent intentCons = new Intent(MainActivity.this, NotificationActivity.class);
         startActivity(intentCons);
-        //Toast.makeText(getApplication(), "CLICK EN TEXTVIEW.", Toast.LENGTH_LONG).show();
     }
 
     private void addEventToCalendar(Activity activity) {
@@ -332,6 +330,17 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(notificationChannel);
         }
+    }
+
+    public void crearNotificacion(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(MainActivity.this.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
 }

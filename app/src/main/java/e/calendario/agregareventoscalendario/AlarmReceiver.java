@@ -10,9 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 
 import java.util.Stack;
 
@@ -29,7 +27,6 @@ public class AlarmReceiver extends BroadcastReceiver {
     public AlarmReceiver(){
         pilaConsejos = new Stack<>();
         llenarPilaConsejos();
-        //numConsejo = 1;
     }
 
     @Override
@@ -38,7 +35,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         long when = System.currentTimeMillis();
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Intent notificationIntent = new Intent(context, NotificationActivity.class);
+        Intent notificationIntent = new Intent(context, ConsejoActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -63,10 +60,9 @@ public class AlarmReceiver extends BroadcastReceiver {
         notificationManager.notify(MID, builder.build());
         MID++;
 
-        SharedPreferences.Editor editor = context.getSharedPreferences("numero", MODE_PRIVATE).edit();
-        editor.putInt("numConsejo",numConsejo);
+        SharedPreferences.Editor editor = context.getSharedPreferences("consejo", MODE_PRIVATE).edit();
+        editor.putString("consejo",consejo);
         editor.apply();
-        numConsejo = 0;
     }
 
     public void llenarPilaConsejos(){
@@ -132,7 +128,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 "La gran mayoría de los productos de limpieza que se anuncian no sólo son innecesarios sino también muy nocivos para el medio ambiente.\n" +
                 "Los ambientadores no eliminan los malos olores sino que desprenden otros más fuertes que nos impiden detectar los primeros.\n" +
                 "Evita usar productos de limpieza agresivos: limpiahornos, lejía, etc., que impiden los procesos biológicos de depuración del agua.\n" +
-                "Para ahorrar agua, instala un sistema de doble descarga en el inodoro, ya que vaciar la cisterna entera supone gastar de 10 a litros.\n" +
+                "Para ahorrar agua, instala un sistema de doble descarga en el inodoro, ya que vaciar la cisterna entera supone gastar aproximádamente 10 litros.\n" +
                 "Rechaza los alimentos envasados en bandejas de poliestireno expandido (corcho blanco).\n" +
                 "Guarda los alimentos en la clásica fiambrera o tarros de cristal en lugar de envolverlos o taparlos con película de plástico o aluminio.\n" +
                 "Si te ha caducado algún medicamento, no lo tires a la basura, llévalo a una farmacia.\n" +
