@@ -16,11 +16,17 @@ import android.os.Build;
 import android.provider.CalendarContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.text.SimpleDateFormat;
@@ -38,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private Intent intentCalendario;
     private Calendar cal;
     private final static String CHANNEL_ID = "Notificación";
+    private String[] opcionesSideBar;
+    private DrawerLayout drawerLayout;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +57,33 @@ public class MainActivity extends AppCompatActivity {
         final Activity activity = this;
         final Button boton = (Button) findViewById(R.id.button);
         cal = Calendar.getInstance();
+
+        opcionesSideBar = new String[2];
+        opcionesSideBar[0] = "Ver lista de consejos";
+        opcionesSideBar[1] = "Configuración";
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        listView = (ListView) findViewById(R.id.left_drawer);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, opcionesSideBar);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0){
+                    Intent intentCons = new Intent(MainActivity.this, NotificationActivity.class);
+                    startActivity(intentCons);
+                } else{
+                    Toast.makeText(getApplication(), "CONFIGURACION.", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
+
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.show();
+        }
+
 
         final TextView texto = (TextView) findViewById(R.id.texto);
 
@@ -342,5 +378,6 @@ public class MainActivity extends AppCompatActivity {
         AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(MainActivity.this.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
+
 
 }
