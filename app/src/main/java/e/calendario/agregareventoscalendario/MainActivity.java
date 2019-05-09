@@ -1,11 +1,13 @@
 package e.calendario.agregareventoscalendario;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ClipData;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -14,13 +16,20 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.CalendarContract;
+import android.support.design.internal.NavigationMenu;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentController;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
@@ -33,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.zip.Inflater;
 
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
@@ -46,8 +56,9 @@ public class MainActivity extends AppCompatActivity {
     private final static String CHANNEL_ID = "Notificación";
     private String[] opcionesSideBar;
     private DrawerLayout drawerLayout;
-    private ListView listView;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,8 +72,15 @@ public class MainActivity extends AppCompatActivity {
         opcionesSideBar = new String[2];
         opcionesSideBar[0] = "Ver lista de consejos";
         opcionesSideBar[1] = "Configuración";
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        listView = (ListView) findViewById(R.id.left_drawer);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        /*listView = findViewById(R.id.left_drawer);
+
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, opcionesSideBar);
         listView.setAdapter(adapter);
@@ -77,17 +95,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
-        });
-
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
-            actionBar.show();
-        }
-
+        });*/
 
         final TextView texto = (TextView) findViewById(R.id.texto);
-
-        final TextView consejos = (TextView) findViewById(R.id.consejo_textView);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
@@ -160,16 +170,9 @@ public class MainActivity extends AppCompatActivity {
                 addEventToCalendar(activity);
                 boton.setEnabled(false);
                 texto.setText("Los eventos ya han sido agregados a su calendario.");
-
-
             }
         });
 
-    }
-
-    public void onClick(View v){
-        Intent intentCons = new Intent(MainActivity.this, NotificationActivity.class);
-        startActivity(intentCons);
     }
 
     private void addEventToCalendar(Activity activity) {
@@ -379,5 +382,29 @@ public class MainActivity extends AppCompatActivity {
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(actionBarDrawerToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        if(item.getItemId()==R.id.nav_config){
+            Toast.makeText(getApplication(), "CONFIGURACION.", Toast.LENGTH_LONG).show();
+        }
+        if(item.getItemId()==R.id.nav_list){
+            Toast.makeText(getApplication(), "LISTA.", Toast.LENGTH_LONG).show();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public boolean itemSelected(MenuItem item){
+        if(item.getItemId()==R.id.nav_config){
+            Toast.makeText(getApplication(), "CONFIGURACION.", Toast.LENGTH_LONG).show();
+        }
+        if(item.getItemId()==R.id.nav_list){
+            Toast.makeText(getApplication(), "LISTA.", Toast.LENGTH_LONG).show();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }
