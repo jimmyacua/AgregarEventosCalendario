@@ -16,45 +16,35 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.CalendarContract;
-import android.support.design.internal.NavigationMenu;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentController;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.zip.Inflater;
-
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int SOLICITUD_PERMISO_ESCRITURA = 1;
     private static final int SOLICITUD_PERMISO_LECTURA = 2;
     private Intent intentCalendario;
     private Calendar cal;
     private final static String CHANNEL_ID = "Notificación";
-    private String[] opcionesSideBar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
 
@@ -69,33 +59,13 @@ public class MainActivity extends AppCompatActivity {
         final Button boton = (Button) findViewById(R.id.button);
         cal = Calendar.getInstance();
 
-        opcionesSideBar = new String[2];
-        opcionesSideBar[0] = "Ver lista de consejos";
-        opcionesSideBar[1] = "Configuración";
+
         drawerLayout = findViewById(R.id.drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-        /*listView = findViewById(R.id.left_drawer);
-
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, opcionesSideBar);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(position == 0){
-                    Intent intentCons = new Intent(MainActivity.this, NotificationActivity.class);
-                    startActivity(intentCons);
-                } else{
-                    Toast.makeText(getApplication(), "CONFIGURACION.", Toast.LENGTH_LONG).show();
-                }
-
-            }
-        });*/
+        this.setNavigationViewListener();
 
         final TextView texto = (TextView) findViewById(R.id.texto);
 
@@ -109,18 +79,8 @@ public class MainActivity extends AppCompatActivity {
 
         createNotificationChannel();
         crearNotificacion();
-        //Calendar calendar = Calendar.getInstance();
-        /*calendar.set(Calendar.HOUR_OF_DAY, 9);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);*/
-
-        /*Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(MainActivity.this.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);*/
 
         CalendarProvider calendarProvider = new CalendarProvider(getApplicationContext());
-        //List<me.everything.providers.android.calendar.Calendar> calendars = calendarProvider.getCalendars().getList();
         long calendarID = 0;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             calendarID = 3;
@@ -383,28 +343,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(actionBarDrawerToggle.onOptionsItemSelected(item)){
+    public boolean onOptionsItemSelected(MenuItem item){
+        if(actionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        if(item.getItemId()==R.id.nav_config){
-            Toast.makeText(getApplication(), "CONFIGURACION.", Toast.LENGTH_LONG).show();
-        }
-        if(item.getItemId()==R.id.nav_list){
-            Toast.makeText(getApplication(), "LISTA.", Toast.LENGTH_LONG).show();
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
-    public boolean itemSelected(MenuItem item){
-        if(item.getItemId()==R.id.nav_config){
-            Toast.makeText(getApplication(), "CONFIGURACION.", Toast.LENGTH_LONG).show();
-        }
-        if(item.getItemId()==R.id.nav_list){
-            Toast.makeText(getApplication(), "LISTA.", Toast.LENGTH_LONG).show();
-        }
-        return super.onOptionsItemSelected(item);
+    public void setNavigationViewListener(){
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigationMenu);
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        int id = menuItem.getItemId();
+        if(id == R.id.nav_list){
+            Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
+            startActivity(intent);
+        }
+        else if(id == R.id.nav_config){
+            Toast.makeText(getApplication(), "CONFIGURACIÓN", Toast.LENGTH_SHORT).show();
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
 }
