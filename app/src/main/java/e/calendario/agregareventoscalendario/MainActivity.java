@@ -7,10 +7,10 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ClipData;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -28,13 +28,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.WeakHashMap;
+
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
 
@@ -54,11 +58,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         final Activity activity = this;
         final Button boton = (Button) findViewById(R.id.button);
         cal = Calendar.getInstance();
-
 
         drawerLayout = findViewById(R.id.drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -69,62 +71,78 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         final TextView texto = (TextView) findViewById(R.id.texto);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
+        int permissionEscritura = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR);
+        int permissionLectura = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR);
+
+        if(permissionEscritura == -1){
+            ActivityCompat.requestPermissions(this ,new String[]{Manifest.permission.WRITE_CALENDAR},
+                    SOLICITUD_PERMISO_ESCRITURA);
+
+        }
+        if(permissionLectura == -1){
+            ActivityCompat.requestPermissions(this ,new String[]{Manifest.permission.READ_CALENDAR},
+                    SOLICITUD_PERMISO_LECTURA);
+
+        }
+        /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_CALENDAR}, SOLICITUD_PERMISO_ESCRITURA);
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, SOLICITUD_PERMISO_LECTURA);
-        }
+        }*/
 
         intentCalendario = new Intent(Intent.CATEGORY_APP_CALENDAR);
-
-        createNotificationChannel();
-        crearNotificacion();
-
-        CalendarProvider calendarProvider = new CalendarProvider(getApplicationContext());
-        long calendarID = 0;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            calendarID = 3;
-        } else{
-            Cursor cur = this.getContentResolver().query(CalendarContract.Calendars.CONTENT_URI, null, null, null, null);
-            if (cur.moveToFirst()) {
-                calendarID = cur.getLong(cur.getColumnIndex(CalendarContract.Calendars._ID));
-            }
-            if (cur != null) {
-                cur.close();
-            }
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("configuracion_notificacion", MODE_PRIVATE);
+        final boolean allowNotif = sharedPreferences.getBoolean("conf_notificacion", true);
+        if (allowNotif) {
+            createNotificationChannel();
+            crearNotificacion();
         }
-        final List<Event> calendars = calendarProvider.getEvents(calendarID).getList();
 
-        boolean residuosOrd = false, residuosRec = false, residuosNT = false, residuosOrg = false;
-
-
-        for(int i = 0; i< calendars.size(); i++){
-            if (calendars.get(i).title.equals("Residuos Ordinarios")){
-                residuosOrd = true;
-            } else if(calendars.get(i).title.equals("Residuos Reciclables")){
-                residuosRec = true;
-            } else if(calendars.get(i).title.equals("Residuos No Tradicionales")){
-                residuosNT = true;
-            } else if(calendars.get(i).title.equals("Residuos Orgánicos")){
-                residuosOrg = true;
+        try {
+            CalendarProvider calendarProvider = new CalendarProvider(getApplicationContext());
+            long calendarID = 0;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                calendarID = 3;
+            } else{
+                Cursor cur = this.getContentResolver().query(CalendarContract.Calendars.CONTENT_URI, null, null, null, null);
+                if (cur.moveToFirst()) {
+                    calendarID = cur.getLong(cur.getColumnIndex(CalendarContract.Calendars._ID));
+                }
+                if (cur != null) {
+                    cur.close();
+                }
             }
 
-        }
-        if(residuosOrd && residuosRec && residuosNT && residuosOrg){
-            boton.setEnabled(false);
-            texto.setText("Los eventos ya han sido agregados a su calendario.");
-        }
+            final List<Event> calendars = calendarProvider.getEvents(calendarID).getList();
+            boolean residuosOrd = false, residuosRec = false, residuosNT = false, residuosOrg = false;
+
+            for(int i = 0; i< calendars.size(); i++){
+                if (calendars.get(i).title.equals("Residuos Ordinarios")){
+                    residuosOrd = true;
+                } else if(calendars.get(i).title.equals("Residuos Reciclables")){
+                    residuosRec = true;
+                } else if(calendars.get(i).title.equals("Residuos No Tradicionales")){
+                    residuosNT = true;
+                } else if(calendars.get(i).title.equals("Residuos Orgánicos")){
+                    residuosOrg = true;
+                }
+            }
+            if(residuosOrd && residuosRec && residuosNT && residuosOrg){
+                boton.setEnabled(false);
+                texto.setText("Los eventos ya han sido agregados a su calendario.");
+            }
+        } catch (Exception e){}
 
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int permisoEscritura = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_CALENDAR);
-                if(permisoEscritura == -1){
+                while(permisoEscritura == -1){
                     ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_CALENDAR}, SOLICITUD_PERMISO_ESCRITURA);
                 }
 
                 int permisoLectura = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_CALENDAR);
-                if(permisoLectura == -1){
+                while (permisoLectura == -1){
                     ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_CALENDAR}, SOLICITUD_PERMISO_LECTURA);
                 }
                 addEventToCalendar(activity);
@@ -132,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 texto.setText("Los eventos ya han sido agregados a su calendario.");
             }
         });
+
 
     }
 
@@ -332,9 +351,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void crearNotificacion(){
+        int hora = -1;
+        int minuto = -1;
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 12);
-        calendar.set(Calendar.MINUTE, 0);
+        SharedPreferences sharedPreferencesH = getSharedPreferences("hora",MODE_PRIVATE);
+        hora = sharedPreferencesH.getInt("hora", -1);
+        if(hora == -1){
+            hora = 9;
+            //ConfigurationActivity configurationActivity = new ConfigurationActivity();
+            //configurationActivity.setSpinnerHoras(hora);
+        }
+
+        minuto = sharedPreferencesH.getInt("minuto", -1);
+        if(minuto == -1){
+            minuto = 0;
+            //ConfigurationActivity configurationActivity = new ConfigurationActivity();
+            //configurationActivity.setSpinnerHoras(minuto);
+        }
+        calendar.set(Calendar.HOUR_OF_DAY, hora);
+        calendar.set(Calendar.MINUTE, minuto);
         calendar.set(Calendar.SECOND, 0);
         Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -363,9 +398,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(intent);
         }
         else if(id == R.id.nav_config){
-            Toast.makeText(getApplication(), "CONFIGURACIÓN", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, ConfigurationActivity.class);
+            startActivity(intent);
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }

@@ -12,6 +12,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
+import java.util.Calendar;
 import java.util.Stack;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -31,38 +32,56 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Calendar calendar = Calendar.getInstance();
+        SharedPreferences sharedPreferences = context.getSharedPreferences("hora", MODE_PRIVATE);
+        int hora = sharedPreferences.getInt("hora", -1);
         llenarPilaConsejos();
         long when = System.currentTimeMillis();
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        int curHr = calendar.get(Calendar.HOUR_OF_DAY);
+        if(curHr > hora){
+            calendar.add(Calendar.DATE, 1);
+        } else {
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Intent notificationIntent = new Intent(context, ConsejoActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Intent notificationIntent = new Intent(context, ConsejoActivity.class);
+            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        consejo = sacarConsejo();
+            consejo = sacarConsejo();
 
-        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-        builder.setSmallIcon(R.drawable.ic_new_releases_black_24dp);
-        builder.setContentTitle("Consejo del día");
-        builder.setContentText(consejo);
-        notificationIntent.putExtra("nConsejo", consejo);
-        builder.setChannelId("Notificación");
-        builder.setColor(Color.GREEN);
-        builder.setStyle(new NotificationCompat.BigTextStyle().bigText(consejo));
-        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        builder.setLights(Notification.DEFAULT_LIGHTS, 1000, 1000);
-        builder.setVibrate(new long[]{Notification.DEFAULT_VIBRATE});
-        builder.setDefaults(Notification.DEFAULT_SOUND);
-        builder.setContentIntent(pendingIntent);
-        builder.setAutoCancel(true);
-        notificationManager.notify(MID, builder.build());
-        MID++;
+            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+            builder.setSmallIcon(R.drawable.ic_new_releases_black_24dp);
+            builder.setContentTitle("Consejo del día");
+            builder.setContentText(consejo);
+            notificationIntent.putExtra("nConsejo", consejo);
+            builder.setChannelId("Notificación");
+            builder.setColor(Color.GREEN);
+            builder.setStyle(new NotificationCompat.BigTextStyle().bigText(consejo));
+            builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            builder.setLights(Notification.DEFAULT_LIGHTS, 1000, 1000);
+            builder.setVibrate(new long[]{Notification.DEFAULT_VIBRATE});
+            try {
+                SharedPreferences sharedPreferencesSound = context.getSharedPreferences("conf_sonido", MODE_PRIVATE);
+                final boolean soundOn = sharedPreferencesSound.getBoolean("conf_sonido", true);
+                if(soundOn) {
+                    builder.setDefaults(Notification.DEFAULT_SOUND);
+                }
+            } catch (Exception e){}
 
-        SharedPreferences.Editor editor = context.getSharedPreferences("consejo", MODE_PRIVATE).edit();
-        editor.putString("consejo",consejo);
-        editor.apply();
+            builder.setContentIntent(pendingIntent);
+            builder.setAutoCancel(true);
+            builder.setWhen(when);
+            notificationManager.notify(MID, builder.build());
+            MID++;
+
+
+            SharedPreferences.Editor editor = context.getSharedPreferences("consejo", MODE_PRIVATE).edit();
+            editor.putString("consejo", consejo);
+            editor.apply();
+        }
+
     }
 
     public void llenarPilaConsejos(){

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ConfigurationActivity">
+
+    <Switch
+        android:id="@+id/switchNotif"
+        android:layout_width="352dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="60dp"
+        android:text="Activar notificaciones"
+        android:textSize="20sp"/>
+
+    <Switch
+        android:id="@+id/switchSonido"
+        android:layout_width="352dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="130dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="60dp"
+        android:text="Activar el sonido de las notificaciones"
+        android:textSize="20sp"/>
+
+    <Spinner
+        android:id="@+id/spinnerHora"
+        android:layout_width="126dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="110dp"
+        android:layout_marginTop="200dp"
+        android:spinnerMode="dropdown"/>
+
+    <TextView
+        android:id="@+id/textViewHora"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="220dp"
+        android:text="Hora: "
+        android:textColor="@android:color/black"/>
+
+    <Spinner
+        android:id="@+id/spinnerMinutos"
+        android:layout_width="126dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="110dp"
+        android:layout_marginTop="300dp" />
+
+    <TextView
+        android:id="@+id/textViewMinutos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="320dp"
+        android:text="Minutos: "
+        android:textColor="@android:color/black"/>
+
+</RelativeLayout>
