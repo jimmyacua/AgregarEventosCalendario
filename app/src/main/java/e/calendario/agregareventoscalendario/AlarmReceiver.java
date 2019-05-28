@@ -34,7 +34,8 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Calendar calendar = Calendar.getInstance();
         SharedPreferences sharedPreferences = context.getSharedPreferences("hora", MODE_PRIVATE);
-        int hora = sharedPreferences.getInt("hora", -1);
+        SharedPreferences sharedPreferencesMin = context.getSharedPreferences("minutos", MODE_PRIVATE);
+        int hora = sharedPreferences.getInt("hora", -1) + sharedPreferencesMin.getInt("minutos", -1);
         llenarPilaConsejos();
         long when = System.currentTimeMillis();
         int curHr = calendar.get(Calendar.HOUR_OF_DAY);
